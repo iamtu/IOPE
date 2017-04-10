@@ -1,0 +1,11 @@
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.01.txt ../models/new2ml-ope/nyt/alpha0.01 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.1.txt ../models/new2ml-ope/nyt/alpha0.1 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.2.txt ../models/new2ml-ope/nyt/alpha0.2 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.3.txt ../models/new2ml-ope/nyt/alpha0.3 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.4.txt ../models/new2ml-ope/nyt/alpha0.4 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.5.txt ../models/new2ml-ope/nyt/alpha0.5 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.6.txt ../models/new2ml-ope/nyt/alpha0.6 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.7.txt ../models/new2ml-ope/nyt/alpha0.7 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.8.txt ../models/new2ml-ope/nyt/alpha0.8 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.9.txt ../models/new2ml-ope/nyt/alpha0.9 ../data/nyt
+python run.py new2ml-ope ../data/nyt/nyt_train.txt ../data/nyt/new2alphasettings/nyt_settings_0.99.txt ../models/new2ml-ope/nyt/alpha0.99 ../data/nyt
