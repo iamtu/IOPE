@@ -23,7 +23,7 @@ def read_minibatch(fp, batch_size):
             term_count = terms[i].split(':')
             ids.append(int(term_count[0]))
         wordids.append(ids)
-    return(wordids, stop)    
+    return(wordids, stop)
 
 def parse_docs(corp):
     wordids = list()
@@ -41,7 +41,7 @@ def read_topics(folder, i, j):
     topics = np.loadtxt(filename)
     topics = topics.astype(int)
     return(topics)
-    
+
 def read_loops(model_folder):
     loops_filename = '%s/loops.csv'%(model_folder)
     f = open(loops_filename, 'r')
@@ -53,7 +53,7 @@ def read_loops(model_folder):
     print'\t number of iters of training %d'%(I)
     print'\t number of minibatch %d'%(J)
     return(I, J)
-    
+
 def filter_topics(folder, i, j, filtered_tops):
     filename = '%s/top10_%d_%d.dat' % (folder, i+1, j+1)
     # get topics
@@ -106,7 +106,7 @@ def main():
     del corp
     # define constants
     N = len(wordids) # number of documents in training data
-    logN = np.log(N) # 
+    logN = np.log(N) #
     # compute co-frequencies
     print'computing co-frequencies ...'
     df = [0 for i in range(num_terms)]
