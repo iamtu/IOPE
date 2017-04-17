@@ -1,0 +1,17 @@
+num_docs: 290000
+num_terms: 102661
+num_topics: 100
+batch_size: 5000
+alpha: 0.01
+eta: 0.01
+tau0: 1.0
+kappa: 0.9
+conv_infer: 1e-5
+iter_infer: 50
+iter_train: 1
+num_samples: 15
+burn_in: 15
+weighted_new2: 0.3
+no_sequence: 3
+weighted_new5: 0.3
+p_bernoulli: 0.55

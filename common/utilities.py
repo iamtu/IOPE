@@ -137,6 +137,7 @@ def read_setting(file_name):
     ddict['iter_infer'] = int(ddict['iter_infer'])
     ddict['batch_size'] = int(ddict['batch_size'])
     ddict['no_sequence'] = int(ddict['no_sequence'])
+    ddict['p_bernoulli'] = float(ddict['p_bernoulli'])
     return(ddict)
 
 """
