@@ -127,6 +127,8 @@ def read_setting(file_name):
         #print'%s\n'%(settings[i])
         if settings[i][0] == '#':
             continue
+        if len(settings[i]) == 0:
+            break;
         set_val = settings[i].split(':')
         sets.append(set_val[0])
         vals.append(float(set_val[1]))

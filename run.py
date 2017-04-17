@@ -5,9 +5,9 @@ Created on Mon Oct 26 15:52:29 2015
 @author: dhbk
 """
 import sys, os, shutil
-mypath = ['./common', 
-            './ML-OPE','./New1ML-OPE','./New2ML-OPE','./New3ML-OPE','./New4ML-OPE',
-          './Online-OPE','./New1Online-OPE','./New2Online-OPE','./New3Online-OPE','./New4Online-OPE',
+mypath = ['./common',
+            './ml-ope/ML-OPE','./ml-ope/New1ML-OPE','./ml-ope/New2ML-OPE','./ml-ope/New3ML-OPE','./ml-ope/New4ML-OPE',
+          './online-ope/Online-OPE','./online-ope/New1Online-OPE','./online-ope/New2Online-OPE','./online-ope/New3Online-OPE','./online-ope/New4Online-OPE',
          ]
 for temp in mypath:
     sys.path.insert(0, temp)
@@ -38,7 +38,10 @@ def main():
     setting_file = sys.argv[3]
     model_folder = sys.argv[4]
     test_data_folder = sys.argv[5]
+
+    # FIXME - move me to settings
     tops = 10#int(sys.argv[5])
+
     # Create model folder if it doesn't exist
     if os.path.exists(model_folder):
         shutil.rmtree(model_folder)
@@ -47,24 +50,24 @@ def main():
     print'reading setting ...'
     settings = utilities.read_setting(setting_file)
     # settings là một dictionary
-    # 
-    
+    #
+
     # Read data for computing perplexities
     print'read data for computing perplexities ...'
     test_data = utilities.read_data_for_perpl(test_data_folder)
     '''
-    test_data =[wordids_1,wordcts_1,wordids_2,wordct_2] 
+    test_data =[wordids_1,wordcts_1,wordids_2,wordct_2]
     '''
-    
-    # Check method and run algorithm
-    methods = ['ml-ope', 'new1ml-ope','new2ml-ope','new3ml-ope','new4ml-ope',  
-    		'online-ope','new1online-ope','new2online-ope','new3online-ope','new4online-ope' ]
-    method_low = method_name.lower()    
 
-    if method_low == 'ml-ope':        
+    # Check method and run algorithm
+    methods = ['ml-ope', 'new1ml-ope','new2ml-ope','new3ml-ope','new4ml-ope',
+    		'online-ope','new1online-ope','new2online-ope','new3online-ope','new4online-ope' ]
+    method_low = method_name.lower()
+
+    if method_low == 'ml-ope':
         run_mlope = run_ML_OPE.runMLOPE(train_file, settings, model_folder, test_data, tops)
         run_mlope.run()
-    elif method_low == 'new1ml-ope':        
+    elif method_low == 'new1ml-ope':
         run_new1_mlope = run_New1ML_OPE.runNew1MLOPE(train_file, settings, model_folder, test_data, tops)
         run_new1_mlope.run()
     elif method_low == 'new2ml-ope':
@@ -76,7 +79,7 @@ def main():
     elif method_low == 'new4ml-ope':
         run_new4_mlope = run_New4ML_OPE.runNew4MLOPE(train_file, settings, model_folder, test_data, tops)
         run_new4_mlope.run()
-            
+
 
     elif method_low == 'online-ope':
         run_onlineope = run_Online_OPE.runOnlineOPE(train_file, settings, model_folder, test_data, tops)
@@ -96,13 +99,13 @@ def main():
     elif method_low == 'streaming-ope':
         run_streamingope = run_Streaming_OPE.runStreamingOPE(train_file, settings, model_folder, test_data, tops)
         run_streamingope.run()
-    
+
     else:
         print '\ninput wrong method name: %s\n'%(method_name)
         print 'list of methods:'
         for method in methods:
             print '\t\t%s'%(method)
         exit()
-        
+
 if __name__ == '__main__':
     main()
