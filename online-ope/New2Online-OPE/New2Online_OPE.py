@@ -130,6 +130,7 @@ class New2OnlineOPE:
             x_u = x_u + alpha * (beta[index,:] - x_u)
 
             L[np.random.binomial(1, self.p_bernoulli)] += 1
+
             # Select a vertex with the largest value of
             # derivative of the function F
             df = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
@@ -144,9 +145,14 @@ class New2OnlineOPE:
 
             fu = self.value_infer_doc(theta_u, beta, self.alpha, cts)
             fl = self.value_infer_doc(theta_l, beta, self.alpha, cts)
-            print fu
-            print fl
-            pivot = math.exp(fu) / (math.exp(fu) + math.exp(fl))
+
+            try:
+                pivot = math.exp(fu) / (math.exp(fu) + math.exp(fl))
+            except ZeroDivisionError:
+                pivot = 0.5
+            except OverflowError:
+                pivot = 0.5
+
 
             if (np.random.rand() < pivot) :
                 theta = theta_u

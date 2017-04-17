@@ -131,7 +131,12 @@ class New2MLOPE:
 
             fu = self.value_infer_doc(theta_u, beta, self.alpha, cts)
             fl = self.value_infer_doc(theta_l, beta, self.alpha, cts)
-            pivot = math.exp(fu) / (math.exp(fu) + math.exp(fl))
+            try:
+                pivot = math.exp(fu) / (math.exp(fu) + math.exp(fl))
+            except ZeroDivisionError:
+                pivot = 0.5
+            except OverflowError:
+                pivot = 0.5
 
             if (np.random.rand() < pivot) :
                 theta = theta_u
