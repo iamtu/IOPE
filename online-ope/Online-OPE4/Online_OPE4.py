@@ -3,13 +3,10 @@
 import time
 import numpy as np
 
-class New3OnlineOPE:
-    """
-    Implements Online-OPE for LDA as described in "Inference in topic models II: provably guaranteed algorithms".
-    """
+class OnlineOPE4:
 
     def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
-                 iter_infer, p_bernoulli):
+                 iter_infer, weighted, p_bernoulli):
         """
         Arguments:
             num_docs: Number of documents in the corpus.
@@ -33,6 +30,7 @@ class New3OnlineOPE:
         self.INF_MAX_ITER = iter_infer
         self.p_bernoulli = p_bernoulli
 
+        self.weighted = weighted
         # Initialize lambda (variational parameters of topics beta)
         # beta_norm stores values, each of which is sum of elements in each row
         # of _lambda.
@@ -80,16 +78,6 @@ class New3OnlineOPE:
             theta[d,:] = thetad
         return(theta)
 
-    def value_infer_doc(self, theta, beta, alpha, cts):
-        log_theta = np.log(theta)
-        exp_2 = (alpha - 1) * sum(log_theta)
-
-        x = np.dot(theta , beta)
-        x_log = np.log(x)
-        exp_1 = np.dot(cts, x_log)
-
-        return (exp_1 + exp_2)
-
     def infer_doc(self, ids, cts):
         """
         Does inference for a document using Online MAP Estimation algorithm.
@@ -106,45 +94,32 @@ class New3OnlineOPE:
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
-        # x_u = sum_(k=2)^K theta_k * beta_{kj}
+
+        # x = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
 
         # Loop
         U = [1, 0]
         L = [0, 1]
-        for l in xrange(1,self.INF_MAX_ITER / 2):
-            # Pick fi uniformly
-            U[np.random.binomial(1, self.p_bernoulli)] += 1
-            # Select a vertex with the largest value of
-            # derivative of the function F
-            df = U[0] * np.dot(beta, cts / x_u) + U[1] * (self.alpha - 1) / theta
-            index = np.argmax(df)
+        for l in xrange(1,self.INF_MAX_ITER):
             alpha = 1.0 / (l + 1)
-            # Update theta
-            theta_u = np.copy(theta)
-            theta_u *= 1 - alpha
-            theta_u[index] += alpha
-            # Update x_u
-            x_u = x_u + alpha * (beta[index,:] - x_u)
+
+            U[np.random.binomial(1, self.p_bernoulli)] += 1
+            df_u = U[0] * np.dot(beta, cts / x_u) + U[1] * (self.alpha - 1) / theta
 
             L[np.random.binomial(1, self.p_bernoulli)] += 1
-            # Select a vertex with the largest value of
-            # derivative of the function F
-            df = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
+            df_l = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
+
+            df = self.weighted * df_u + (1 - self.weighted) * df_l
             index = np.argmax(df)
-
             # Update theta
-            theta_l = np.copy(theta)
-            theta_l *= 1 - alpha
-            theta_l[index] += alpha
+            theta *= 1 - alpha
+            theta[index] += alpha
             # Update x_l
+            # Update x_u
+            x_u = x_u + alpha * (beta[index,:] - x_u)
             x_l = x_l + alpha * (beta[index,:] - x_l)
-
-            if(self.value_infer_doc(theta_u, beta, self.alpha, cts) > self.value_infer_doc(theta_l, beta, self.alpha, cts)):
-                theta = theta_u
-            else:
-                theta = theta_l
         return(theta)
 
 

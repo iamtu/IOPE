@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import New2ML_OPE
+import Online_OPE4
 
 sys.path.insert(0, '../../common')
 import utilities
 
-class runNew2MLOPE:
+class runOnlineOPE4:
 
     def __init__(self, train_file, settings, model_folder, test_data, tops):
         self.train_file = train_file
@@ -18,12 +18,13 @@ class runNew2MLOPE:
 
     def run(self):
         # Initialize the algorithm
-        print'initialize the algorithm New2ML-OPE...'
-        ml_ope = New2ML_OPE.New2MLOPE(self.settings['num_terms'], self.settings['num_topics'],
-                            self.settings['alpha'], self.settings['tau0'],
-                            self.settings['kappa'], self.settings['iter_infer'],
-                            self.settings['p_bernoulli']
-                        )
+        print'initialize the algorithm New4Online-OPE ...'
+        online_ope4 = Online_OPE4.OnlineOPE4(self.settings['num_docs'], self.settings['num_terms'],
+                                          self.settings['num_topics'], self.settings['alpha'],
+                                          self.settings['eta'], self.settings['tau0'],
+                                          self.settings['kappa'], self.settings['iter_infer'],
+                                          self.settings['weighted_new4'],
+                                          self.settings['p_bernoulli'])
         # Start
         print'start!!!'
         i = 0
@@ -40,16 +41,16 @@ class runNew2MLOPE:
                     break
                 #
                 print'---num_minibatch:%d---'%(j)
-                (time_e, time_m, theta) = ml_ope.static_online(wordids, wordcts)
+                (time_e, time_m, theta) = online_ope4.static_online(wordids, wordcts)
                 # Compute sparsity
                 sparsity = utilities.compute_sparsity(theta, theta.shape[0], theta.shape[1], 't')
                 # Compute perplexities
-                LD2 = utilities.compute_perplexities_vb(ml_ope.beta, self.settings['alpha'], self.settings['eta'],
+                LD2 = utilities.compute_perplexities_vb(online_ope4._lambda, self.settings['alpha'], self.settings['eta'],
                                                         self.settings['iter_infer'], self.test_data)
                 # Search top words of each topics
-                list_tops = utilities.list_top(ml_ope.beta, self.tops)
+                list_tops = utilities.list_top(online_ope4._lambda, self.tops)
                 # Write files
-                utilities.write_file(i, j, ml_ope.beta, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
+                utilities.write_file(i, j, online_ope4._lambda, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
                                      self.model_folder)
             datafp.close()
         # Write settings
@@ -59,6 +60,6 @@ class runNew2MLOPE:
         # Write final model to file
         print'write final model ...'
         file_name = '%s/beta_final.dat'%(self.model_folder)
-        utilities.write_topics(ml_ope.beta, file_name)
+        utilities.write_topics(online_ope4._lambda, file_name)
         # Finish
         print'done!!!'

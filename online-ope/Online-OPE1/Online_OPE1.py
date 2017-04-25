@@ -2,12 +2,8 @@
 
 import time
 import numpy as np
-import math
 
-class New2OnlineOPE:
-    """
-    Implements Online-OPE for LDA as described in "Inference in topic models II: provably guaranteed algorithms".
-    """
+class OnlineOPE1:
 
     def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
                  iter_infer, p_bernoulli):
@@ -130,7 +126,6 @@ class New2OnlineOPE:
             x_u = x_u + alpha * (beta[index,:] - x_u)
 
             L[np.random.binomial(1, self.p_bernoulli)] += 1
-
             # Select a vertex with the largest value of
             # derivative of the function F
             df = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
@@ -143,18 +138,7 @@ class New2OnlineOPE:
             # Update x_l
             x_l = x_l + alpha * (beta[index,:] - x_l)
 
-            fu = self.value_infer_doc(theta_u, beta, self.alpha, cts)
-            fl = self.value_infer_doc(theta_l, beta, self.alpha, cts)
-
-            try:
-                pivot = math.exp(fu) / (math.exp(fu) + math.exp(fl))
-            except ZeroDivisionError:
-                pivot = 0.5
-            except OverflowError:
-                pivot = 0.5
-
-
-            if (np.random.rand() < pivot) :
+            if( np.random.randint(2) == 1):
                 theta = theta_u
             else:
                 theta = theta_l

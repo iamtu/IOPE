@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import New4ML_OPE
+import New3ML_OPE
 
 sys.path.insert(0, '../../common')
 import utilities
 
-class runNew4MLOPE:
+class runMLOPE3:
 
     def __init__(self, train_file, settings, model_folder, test_data, tops):
         self.train_file = train_file
@@ -18,12 +18,12 @@ class runNew4MLOPE:
 
     def run(self):
         # Initialize the algorithm
-        print'initialize the algorithm New4ML-OPE...'
-        new4ml_ope = New4ML_OPE.New4MLOPE(self.settings['num_terms'], self.settings['num_topics'],
+        print'initialize the algorithm New3ML-OPE...'
+        ml_ope3 = ML_OPE3.MLOPE3(self.settings['num_terms'], self.settings['num_topics'],
                             self.settings['alpha'], self.settings['tau0'],
                             self.settings['kappa'], self.settings['iter_infer'],
-				            self.settings['weighted_new4'], self.settings['p_bernoulli']
-                        )
+                            self.settings['p_bernoulli']
+                            )
         # Start
         print'start!!!'
         i = 0
@@ -40,16 +40,16 @@ class runNew4MLOPE:
                     break
                 #
                 print'---num_minibatch:%d---'%(j)
-                (time_e, time_m, theta) = new4ml_ope.static_online(wordids, wordcts)
+                (time_e, time_m, theta) = ml_ope3.static_online(wordids, wordcts)
                 # Compute sparsity
                 sparsity = utilities.compute_sparsity(theta, theta.shape[0], theta.shape[1], 't')
                 # Compute perplexities
-                LD2 = utilities.compute_perplexities_vb(new4ml_ope.beta, self.settings['alpha'], self.settings['eta'],
+                LD2 = utilities.compute_perplexities_vb(ml_ope3.beta, self.settings['alpha'], self.settings['eta'],
                                                         self.settings['iter_infer'], self.test_data)
                 # Search top words of each topics
-                list_tops = utilities.list_top(new4ml_ope.beta, self.tops)
+                list_tops = utilities.list_top(ml_ope3.beta, self.tops)
                 # Write files
-                utilities.write_file(i, j, new4ml_ope.beta, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
+                utilities.write_file(i, j, ml_ope3.beta, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
                                      self.model_folder)
             datafp.close()
         # Write settings
@@ -59,6 +59,6 @@ class runNew4MLOPE:
         # Write final model to file
         print'write final model ...'
         file_name = '%s/beta_final.dat'%(self.model_folder)
-        utilities.write_topics(new4ml_ope.beta, file_name)
+        utilities.write_topics(ml_ope3.beta, file_name)
         # Finish
         print'done!!!'

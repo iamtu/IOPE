@@ -2,12 +2,9 @@
 
 import time
 import numpy as np
+import math
 
-class New3MLOPE:
-    """
-    Implements ML-OPE for LDA as described in "Inference in topic models II: provably guaranteed algorithms".
-    """
-
+class MLOPE2:
     def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli):
         """
         Arguments:
@@ -101,7 +98,7 @@ class New3MLOPE:
         U = [1, 0]
         L = [0, 1]
         for l in xrange(1,self.INF_MAX_ITER):
-            # Pick fi uniformly
+            # Pick fi bernoulli with p
             U[np.random.binomial(1, self.p_bernoulli)] += 1
             # Select a vertex with the largest value of
             # derivative of the function F
@@ -128,7 +125,16 @@ class New3MLOPE:
             # Update x_l
             x_l = x_l + alpha * (beta[index,:] - x_l)
 
-            if(self.value_infer_doc(theta_u, beta, self.alpha, cts) > self.value_infer_doc(theta_l, beta, self.alpha, cts)):
+            fu = self.value_infer_doc(theta_u, beta, self.alpha, cts)
+            fl = self.value_infer_doc(theta_l, beta, self.alpha, cts)
+            try:
+                pivot = math.exp(fu) / (math.exp(fu) + math.exp(fl))
+            except ZeroDivisionError:
+                pivot = 0.5
+            except OverflowError:
+                pivot = 0.5
+
+            if (np.random.rand() < pivot) :
                 theta = theta_u
             else:
                 theta = theta_l

@@ -3,39 +3,38 @@
 import time
 import numpy as np
 
-class New4MLOPE:
-    """
-    Implements New4ML-OPE for LDA as described in "Stochasic Bounds".
-    """
+class OnlineOPE3:
 
-    def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, weighted, p_bernoulli):
+    def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+                 iter_infer, p_bernoulli):
         """
         Arguments:
+            num_docs: Number of documents in the corpus.
             num_terms: Number of unique terms in the corpus (length of the vocabulary).
             num_topics: Number of topics shared by the whole corpus.
             alpha: Hyperparameter for prior on topic mixture theta.
+            eta: Hyperparameter for prior on topics beta.
             tau0: A (positive) learning parameter that downweights early iterations.
             kappa: Learning rate: exponential decay rate should be between
                    (0.5, 1.0] to guarantee asymptotic convergence.
-            iter_infer: Number of iterations of FW algorithm
-
-        Note that if you pass the same set of all documents in the corpus every time and
-        set kappa=0 this class can also be used to do batch OPE.
+            iter_infer: Number of iterations of FW algorithm.
         """
+        self.num_docs = num_docs
         self.num_topics = num_topics
         self.num_terms = num_terms
         self.alpha = alpha
+        self.eta = eta
         self.tau0 = tau0
         self.kappa = kappa
         self.updatect = 1
         self.INF_MAX_ITER = iter_infer
         self.p_bernoulli = p_bernoulli
 
-        self.weighted = weighted
-        # Initialize beta (topics)
-        self.beta = np.random.rand(self.num_topics, self.num_terms) + 1e-10
-        beta_norm = self.beta.sum(axis = 1)
-        self.beta /= beta_norm[:, np.newaxis]
+        # Initialize lambda (variational parameters of topics beta)
+        # beta_norm stores values, each of which is sum of elements in each row
+        # of _lambda.
+        self._lambda = np.random.rand(self.num_topics, self.num_terms) + 1e-10
+        self.beta_norm = self._lambda.sum(axis = 1)
 
     def static_online(self, wordids, wordcts):
         """
@@ -78,6 +77,16 @@ class New4MLOPE:
             theta[d,:] = thetad
         return(theta)
 
+    def value_infer_doc(self, theta, beta, alpha, cts):
+        log_theta = np.log(theta)
+        exp_2 = (alpha - 1) * sum(log_theta)
+
+        x = np.dot(theta , beta)
+        x_log = np.log(x)
+        exp_1 = np.dot(cts, x_log)
+
+        return (exp_1 + exp_2)
+
     def infer_doc(self, ids, cts):
         """
         Does inference for a document using Online MAP Estimation algorithm.
@@ -89,58 +98,68 @@ class New4MLOPE:
         Returns inferred theta.
         """
         # locate cache memory
-        beta = self.beta[:,ids]
+        beta = self._lambda[:,ids]
+        beta /= self.beta_norm[:, np.newaxis]
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
-
-        # x = sum_(k=2)^K theta_k * beta_{kj}
+        # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
 
         # Loop
         U = [1, 0]
         L = [0, 1]
-        for l in xrange(1,self.INF_MAX_ITER):
-            alpha = 1.0 / (l + 1)
-
+        for l in xrange(1,self.INF_MAX_ITER / 2):
+            # Pick fi uniformly
             U[np.random.binomial(1, self.p_bernoulli)] += 1
-            df_u = U[0] * np.dot(beta, cts / x_u) + U[1] * (self.alpha - 1) / theta
-
-            L[np.random.binomial(1, self.p_bernoulli)] += 1
-            df_l = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
-
-            df = self.weighted * df_u + (1 - self.weighted) * df_l
+            # Select a vertex with the largest value of
+            # derivative of the function F
+            df = U[0] * np.dot(beta, cts / x_u) + U[1] * (self.alpha - 1) / theta
             index = np.argmax(df)
+            alpha = 1.0 / (l + 1)
             # Update theta
-            theta *= 1 - alpha
-            theta[index] += alpha
-            # Update x_l
+            theta_u = np.copy(theta)
+            theta_u *= 1 - alpha
+            theta_u[index] += alpha
             # Update x_u
             x_u = x_u + alpha * (beta[index,:] - x_u)
+
+            L[np.random.binomial(1, self.p_bernoulli)] += 1
+            # Select a vertex with the largest value of
+            # derivative of the function F
+            df = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
+            index = np.argmax(df)
+
+            # Update theta
+            theta_l = np.copy(theta)
+            theta_l *= 1 - alpha
+            theta_l[index] += alpha
+            # Update x_l
             x_l = x_l + alpha * (beta[index,:] - x_l)
 
+            if(self.value_infer_doc(theta_u, beta, self.alpha, cts) > self.value_infer_doc(theta_l, beta, self.alpha, cts)):
+                theta = theta_u
+            else:
+                theta = theta_l
         return(theta)
 
 
     def m_step(self, batch_size, wordids, wordcts, theta):
         """
-        Does m step: update global variables beta.
+        Does m step
         """
-        # Compute intermediate beta which is denoted as "unit beta"
-        beta = np.zeros((self.num_topics, self.num_terms), dtype = float)
+        # Compute sufficient sstatistics
+        sstats = np.zeros((self.num_topics, self.num_terms), dtype = float)
         for d in xrange(batch_size):
-            beta[:, wordids[d]] += np.outer(theta[d], wordcts[d])
-        # Check zeros index
-        beta_sum = beta.sum(axis = 0)
-        ids = np.where(beta_sum != 0)[0]
-        unit_beta = beta[:, ids]
-        # Normalize the intermediate beta
-        unit_beta_norm = unit_beta.sum(axis = 1)
-        unit_beta /= unit_beta_norm[:, np.newaxis]
-        # Update beta
+            theta_d = theta[d, :]
+            phi_d = self._lambda[:, wordids[d]] * theta_d[:, np.newaxis]
+            phi_d_norm = phi_d.sum(axis = 0)
+            sstats[:, wordids[d]] += (wordcts[d] / phi_d_norm) * phi_d
+        # Update
         rhot = pow(self.tau0 + self.updatect, -self.kappa)
         self.rhot = rhot
-        self.beta *= (1 - rhot)
-        self.beta[:, ids] += unit_beta * rhot
+        self._lambda = self._lambda * (1-rhot) + \
+            rhot * (self.eta + self.num_docs * sstats / batch_size)
+        self.beta_norm = self._lambda.sum(axis = 1)
         self.updatect += 1

@@ -6,25 +6,25 @@ Created on Mon Oct 26 15:52:29 2015
 """
 import sys, os, shutil
 mypath = ['./common',
-            './ml-ope/ML-OPE','./ml-ope/New1ML-OPE','./ml-ope/New2ML-OPE','./ml-ope/New3ML-OPE','./ml-ope/New4ML-OPE',
-          './online-ope/Online-OPE','./online-ope/New1Online-OPE','./online-ope/New2Online-OPE','./online-ope/New3Online-OPE','./online-ope/New4Online-OPE',
+            './ml-ope/ML-OPE','./ml-ope/ML-OPE1','./ml-ope/ML-OPE2','./ml-ope/ML-OPE3','./ml-ope/ML-OPE4',
+          './online-ope/Online-OPE','./online-ope/Online-OPE1','./online-ope/Online-OPE2','./online-ope/Online-OPE3','./online-ope/Online-OPE4',
          ]
 for temp in mypath:
     sys.path.insert(0, temp)
 import utilities
 
 import run_ML_OPE
-import run_New1ML_OPE
-import run_New2ML_OPE
-import run_New3ML_OPE
-import run_New4ML_OPE
+import run_ML_OPE1
+import run_ML_OPE2
+import run_ML_OPE3
+import run_ML_OPE4
 
 
 import run_Online_OPE
-import run_New1Online_OPE
-import run_New2Online_OPE
-import run_New3Online_OPE
-import run_New4Online_OPE
+import run_Online_OPE1
+import run_Online_OPE2
+import run_Online_OPE3
+import run_Online_OPE4
 
 
 def main():
@@ -60,45 +60,42 @@ def main():
     '''
 
     # Check method and run algorithm
-    methods = ['ml-ope', 'new1ml-ope','new2ml-ope','new3ml-ope','new4ml-ope',
-    		'online-ope','new1online-ope','new2online-ope','new3online-ope','new4online-ope' ]
-    method_low = method_name.lower()
+    methods = ['ml-ope', 'ml-ope1','ml-ope2','ml-ope3','ml-ope4',
+    		'online-ope','online-ope1','online-ope2','online-ope3','online-ope4' ]
+    method_lowercase = method_name.lower()
 
-    if method_low == 'ml-ope':
-        run_mlope = run_ML_OPE.runMLOPE(train_file, settings, model_folder, test_data, tops)
-        run_mlope.run()
-    elif method_low == 'new1ml-ope':
-        run_new1_mlope = run_New1ML_OPE.runNew1MLOPE(train_file, settings, model_folder, test_data, tops)
-        run_new1_mlope.run()
-    elif method_low == 'new2ml-ope':
-        run_new2_mlope = run_New2ML_OPE.runNew2MLOPE(train_file, settings, model_folder, test_data, tops)
-        run_new2_mlope.run()
-    elif method_low == 'new3ml-ope':
-        run_new3_mlope = run_New3ML_OPE.runNew3MLOPE(train_file, settings, model_folder, test_data, tops)
-        run_new3_mlope.run()
-    elif method_low == 'new4ml-ope':
-        run_new4_mlope = run_New4ML_OPE.runNew4MLOPE(train_file, settings, model_folder, test_data, tops)
-        run_new4_mlope.run()
+    if method_lowercase == 'ml-ope':
+        run_ml_ope = run_ML_OPE.runMLOPE(train_file, settings, model_folder, test_data, tops)
+        run_ml_ope.run()
+    elif method_lowercase == 'ml-ope1':
+        run_ml_ope1 = run_ML_OPE1.runMLOPE1(train_file, settings, model_folder, test_data, tops)
+        run_ml_ope1.run()
+    elif method_lowercase == 'ml-ope2':
+        run_ml_ope2 = run_ML_OPE2.runMLOPE2(train_file, settings, model_folder, test_data, tops)
+        run_ml_ope2.run()
+    elif method_lowercase == 'ml-ope3':
+        run_ml_ope3 = run_ML_OPE3.runMLOPE3(train_file, settings, model_folder, test_data, tops)
+        run_ml_ope3.run()
+    elif method_lowercase == 'ml-ope4':
+        run_ml_ope4 = run_ML_OPE4.runMLOPE4(train_file, settings, model_folder, test_data, tops)
+        run_ml_ope4.run()
 
 
-    elif method_low == 'online-ope':
-        run_onlineope = run_Online_OPE.runOnlineOPE(train_file, settings, model_folder, test_data, tops)
-        run_onlineope.run()
-    elif method_low == 'new1online-ope':
-        run_new1_onlineope = run_New1Online_OPE.runNew1OnlineOPE(train_file, settings, model_folder, test_data, tops)
-        run_new1_onlineope.run()
-    elif method_low == 'new2online-ope':
-        run_new2onlineope = run_New2Online_OPE.runNew2OnlineOPE(train_file, settings, model_folder, test_data, tops)
-        run_new2onlineope.run()
-    elif method_low == 'new3online-ope':
-        run_new3onlineope = run_New3Online_OPE.runNew3OnlineOPE(train_file, settings, model_folder, test_data, tops)
-        run_new3onlineope.run()
-    elif method_low == 'new4online-ope':
-        run_new4onlineope = run_New4Online_OPE.runNew4OnlineOPE(train_file, settings, model_folder, test_data, tops)
-        run_new4onlineope.run()
-    elif method_low == 'streaming-ope':
-        run_streamingope = run_Streaming_OPE.runStreamingOPE(train_file, settings, model_folder, test_data, tops)
-        run_streamingope.run()
+    elif method_lowercase == 'online-ope':
+        run_online_ope = run_Online_OPE.runOnlineOPE(train_file, settings, model_folder, test_data, tops)
+        run_online_ope.run()
+    elif method_lowercase == 'online-ope1':
+        run_online_ope1 = run_Online_OPE1.runOnlineOPE1(train_file, settings, model_folder, test_data, tops)
+        run_online_ope1.run()
+    elif method_lowercase == 'online-ope2':
+        run_online_ope2 = run_Online_OPE2.runOnlineOPE2(train_file, settings, model_folder, test_data, tops)
+        run_online_ope2.run()
+    elif method_lowercase == 'online-ope3':
+        run_online_ope3 = run_Online_OPE3.runOnlineOPE3(train_file, settings, model_folder, test_data, tops)
+        run_online_ope3.run()
+    elif method_lowercase == 'online-ope4':
+        run_online_ope4 = run_Online_OPE4.runOnlineOPE4(train_file, settings, model_folder, test_data, tops)
+        run_online_ope4.run()
 
     else:
         print '\ninput wrong method name: %s\n'%(method_name)

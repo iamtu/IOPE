@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import New3Online_OPE
+import ML_OPE1
 
 sys.path.insert(0, '../../common')
 import utilities
 
-class runNew3OnlineOPE:
+class runMLOPE1:
 
     def __init__(self, train_file, settings, model_folder, test_data, tops):
         self.train_file = train_file
@@ -18,12 +18,11 @@ class runNew3OnlineOPE:
 
     def run(self):
         # Initialize the algorithm
-        print'initialize the algorithm New3Online-OPE...'
-        new3_online_ope = New3Online_OPE.New3OnlineOPE(self.settings['num_docs'], self.settings['num_terms'],
-                                          self.settings['num_topics'], self.settings['alpha'],
-                                          self.settings['eta'], self.settings['tau0'],
-                                          self.settings['kappa'], self.settings['iter_infer'],
-                                          self.settings['p_bernoulli'])
+        print'initialize the algorithm New1ML-OPE...'
+        ml_ope1 = ML_OPE1.MLOPE1(self.settings['num_terms'], self.settings['num_topics'],
+                                    self.settings['alpha'], self.settings['tau0'],
+                                    self.settings['kappa'], self.settings['iter_infer'],
+                                    self.settings['p_bernoulli'])
         # Start
         print'start!!!'
         i = 0
@@ -40,16 +39,16 @@ class runNew3OnlineOPE:
                     break
                 #
                 print'---num_minibatch:%d---'%(j)
-                (time_e, time_m, theta) = new3_online_ope.static_online(wordids, wordcts)
+                (time_e, time_m, theta) = ml_ope1.static_online(wordids, wordcts)
                 # Compute sparsity
                 sparsity = utilities.compute_sparsity(theta, theta.shape[0], theta.shape[1], 't')
                 # Compute perplexities
-                LD2 = utilities.compute_perplexities_vb(new3_online_ope._lambda, self.settings['alpha'], self.settings['eta'],
+                LD2 = utilities.compute_perplexities_vb(ml_ope1.beta, self.settings['alpha'], self.settings['eta'],
                                                         self.settings['iter_infer'], self.test_data)
                 # Search top words of each topics
-                list_tops = utilities.list_top(new3_online_ope._lambda, self.tops)
+                list_tops = utilities.list_top(ml_ope1.beta, self.tops)
                 # Write files
-                utilities.write_file(i, j, new3_online_ope._lambda, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
+                utilities.write_file(i, j, ml_ope1.beta, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
                                      self.model_folder)
             datafp.close()
         # Write settings
@@ -59,6 +58,6 @@ class runNew3OnlineOPE:
         # Write final model to file
         print'write final model ...'
         file_name = '%s/beta_final.dat'%(self.model_folder)
-        utilities.write_topics(new3_online_ope._lambda, file_name)
+        utilities.write_topics(ml_ope1.beta, file_name)
         # Finish
         print'done!!!'

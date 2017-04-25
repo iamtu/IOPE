@@ -3,27 +3,25 @@
 import time
 import numpy as np
 
-class New4OnlineOPE:
+class MLOPE4:
 
-    def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
-                 iter_infer, weighted, p_bernoulli):
+    def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, weighted, p_bernoulli):
         """
         Arguments:
-            num_docs: Number of documents in the corpus.
             num_terms: Number of unique terms in the corpus (length of the vocabulary).
             num_topics: Number of topics shared by the whole corpus.
             alpha: Hyperparameter for prior on topic mixture theta.
-            eta: Hyperparameter for prior on topics beta.
             tau0: A (positive) learning parameter that downweights early iterations.
             kappa: Learning rate: exponential decay rate should be between
                    (0.5, 1.0] to guarantee asymptotic convergence.
-            iter_infer: Number of iterations of FW algorithm.
+            iter_infer: Number of iterations of FW algorithm
+
+        Note that if you pass the same set of all documents in the corpus every time and
+        set kappa=0 this class can also be used to do batch OPE.
         """
-        self.num_docs = num_docs
         self.num_topics = num_topics
         self.num_terms = num_terms
         self.alpha = alpha
-        self.eta = eta
         self.tau0 = tau0
         self.kappa = kappa
         self.updatect = 1
@@ -31,11 +29,10 @@ class New4OnlineOPE:
         self.p_bernoulli = p_bernoulli
 
         self.weighted = weighted
-        # Initialize lambda (variational parameters of topics beta)
-        # beta_norm stores values, each of which is sum of elements in each row
-        # of _lambda.
-        self._lambda = np.random.rand(self.num_topics, self.num_terms) + 1e-10
-        self.beta_norm = self._lambda.sum(axis = 1)
+        # Initialize beta (topics)
+        self.beta = np.random.rand(self.num_topics, self.num_terms) + 1e-10
+        beta_norm = self.beta.sum(axis = 1)
+        self.beta /= beta_norm[:, np.newaxis]
 
     def static_online(self, wordids, wordcts):
         """
@@ -89,8 +86,7 @@ class New4OnlineOPE:
         Returns inferred theta.
         """
         # locate cache memory
-        beta = self._lambda[:,ids]
-        beta /= self.beta_norm[:, np.newaxis]
+        beta = self.beta[:,ids]
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
@@ -120,24 +116,28 @@ class New4OnlineOPE:
             # Update x_u
             x_u = x_u + alpha * (beta[index,:] - x_u)
             x_l = x_l + alpha * (beta[index,:] - x_l)
+
         return(theta)
 
 
     def m_step(self, batch_size, wordids, wordcts, theta):
         """
-        Does m step
+        Does m step: update global variables beta.
         """
-        # Compute sufficient sstatistics
-        sstats = np.zeros((self.num_topics, self.num_terms), dtype = float)
+        # Compute intermediate beta which is denoted as "unit beta"
+        beta = np.zeros((self.num_topics, self.num_terms), dtype = float)
         for d in xrange(batch_size):
-            theta_d = theta[d, :]
-            phi_d = self._lambda[:, wordids[d]] * theta_d[:, np.newaxis]
-            phi_d_norm = phi_d.sum(axis = 0)
-            sstats[:, wordids[d]] += (wordcts[d] / phi_d_norm) * phi_d
-        # Update
+            beta[:, wordids[d]] += np.outer(theta[d], wordcts[d])
+        # Check zeros index
+        beta_sum = beta.sum(axis = 0)
+        ids = np.where(beta_sum != 0)[0]
+        unit_beta = beta[:, ids]
+        # Normalize the intermediate beta
+        unit_beta_norm = unit_beta.sum(axis = 1)
+        unit_beta /= unit_beta_norm[:, np.newaxis]
+        # Update beta
         rhot = pow(self.tau0 + self.updatect, -self.kappa)
         self.rhot = rhot
-        self._lambda = self._lambda * (1-rhot) + \
-            rhot * (self.eta + self.num_docs * sstats / batch_size)
-        self.beta_norm = self._lambda.sum(axis = 1)
+        self.beta *= (1 - rhot)
+        self.beta[:, ids] += unit_beta * rhot
         self.updatect += 1
