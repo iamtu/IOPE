@@ -22,7 +22,7 @@ class runMLOPE4:
         ml_ope4 = ML_OPE4.MLOPE4(self.settings['num_terms'], self.settings['num_topics'],
                             self.settings['alpha'], self.settings['tau0'],
                             self.settings['kappa'], self.settings['iter_infer'],
-				            self.settings['weighted_new4'], self.settings['p_bernoulli']
+				            self.settings['p_bernoulli'], self.settings['weighted_new4']
                         )
         # Start
         print'start!!!'
