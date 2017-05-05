@@ -1,20 +1,31 @@
 # -*- coding: utf-8 -*-
-
 import time
 import numpy as np
-from ..Base_ML_OPE import BaseMLOPE
 
-class MLOPE3(BaseMLOPE):
-    def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli):
-        BaseMLOPE.__init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli)
+from Base_Online_OPE import BaseOnlineOPE
 
+class OnlineOPE1(BaseOnlineOPE):
+
+    def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+                 iter_infer, p_bernoulli):
+        BaseOnlineOPE.__init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+                     iter_infer, p_bernoulli)
     def infer_doc(self, ids, cts):
+        """
+        Does inference for a document using Online MAP Estimation algorithm.
+
+        Arguments:
+        ids: an element of wordids, corresponding to a document.
+        cts: an element of wordcts, corresponding to a document.
+
+        Returns inferred theta.
+        """
         # locate cache memory
-        beta = self.beta[:,ids]
+        beta = self._lambda[:,ids]
+        beta /= self.beta_norm[:, np.newaxis]
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
-
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
@@ -22,7 +33,7 @@ class MLOPE3(BaseMLOPE):
         # Loop
         U = [1, 0]
         L = [0, 1]
-        for l in xrange(1,self.INF_MAX_ITER):
+        for l in xrange(1,self.INF_MAX_ITER / 2):
             # Pick fi uniformly
             U[np.random.binomial(1, self.p_bernoulli)] += 1
             # Select a vertex with the largest value of
@@ -50,7 +61,7 @@ class MLOPE3(BaseMLOPE):
             # Update x_l
             x_l = x_l + alpha * (beta[index,:] - x_l)
 
-            if(self.value_infer_doc(theta_u, beta, self.alpha, cts) > self.value_infer_doc(theta_l, beta, self.alpha, cts)):
+            if( np.random.randint(2) == 1):
                 theta = theta_u
             else:
                 theta = theta_l

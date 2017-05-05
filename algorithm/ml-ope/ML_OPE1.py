@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
-import time
 import numpy as np
-from ..Base_ML_OPE import BaseMLOPE
+import time
+
+from Base_ML_OPE import BaseMLOPE
 
 class MLOPE1(BaseMLOPE):
     def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli):
