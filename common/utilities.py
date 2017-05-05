@@ -161,7 +161,10 @@ def compute_perplexities_fw(beta, max_iter, data_test):
 """
     Compute document sparsity.
     doc_tp is theta_(minibatch*K)
+    sparsity of all minibatch documents = means of all sparsity of all documents
+    sparsity of a doc = float
 """
+
 def compute_sparsity(doc_tp, batch_size, num_topics, _type):
     sparsity = np.zeros(batch_size, dtype = np.float)
     if _type == 'z':
@@ -256,14 +259,14 @@ def write_setting(ddict, file_name):
         f.write('%s: %f\n'%(keys[i], vals[i]))
     f.close()
 
-def write_file(i, j, beta, time_e, time_m, theta, sparsity, LD2, list_tops, tops, model_folder):
-    beta_file_name = '%s/beta_%d_%d.dat'%(model_folder, i, j)
-    theta_file_name = '%s/theta_%d.dat'%(model_folder, i)
-    per_file_name = '%s/perplexities_%d.csv'%(model_folder, i)
-    top_file_name = '%s/top%d_%d_%d.dat'%(model_folder, tops, i, j)
-    spar_file_name = '%s/sparsity_%d.csv'%(model_folder, i)
-    time_file_name = '%s/time_%d.csv'%(model_folder, i)
-    loop_file_name = '%s/loops.csv'%(model_folder)
+def write_file(i, j, beta, time_e, time_m, theta, sparsity, LD2, list_tops, top_words_count, output_folder):
+    beta_file_name = '%s/beta_%d_%d.dat'%(output_folder, i, j)
+    theta_file_name = '%s/theta_%d.dat'%(output_folder, i)
+    per_file_name = '%s/perplexities_%d.csv'%(output_folder, i)
+    top_file_name = '%s/top%d_%d_%d.dat'%(output_folder, top_words_count, i, j)
+    spar_file_name = '%s/sparsity_%d.csv'%(output_folder, i)
+    time_file_name = '%s/time_%d.csv'%(output_folder, i)
+    loop_file_name = '%s/loops.csv'%(output_folder)
     """
     # write beta
     if j % 10 == 1:

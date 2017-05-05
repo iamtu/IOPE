@@ -5,12 +5,12 @@ from common import utilities
 
 class runOnlineOPE:
 
-    def __init__(self, algo_name, train_file_name, settings, model_folder, test_data, tops):
+    def __init__(self, algo_name, train_file_name, settings, output_folder, test_data, top_words_count):
         self.train_file_name = train_file_name
         self.settings = settings
-        self.model_folder = model_folder
+        self.output_folder = output_folder
         self.test_data = test_data
-        self.tops = tops
+        self.top_words_count = top_words_count
         self.algo_name = algo_name
 
     def run(self):
@@ -69,18 +69,18 @@ class runOnlineOPE:
                 LD2 = utilities.compute_perplexities_vb(model._lambda, self.settings['alpha'], self.settings['eta'],
                                                         self.settings['iter_infer'], self.test_data)
                 # Search top words of each topics
-                list_tops = utilities.list_top(model._lambda, self.tops)
+                top_words = utilities.list_top(model._lambda, self.top_words_count)
                 # Write files
-                utilities.write_file(i, j, model._lambda, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
-                                     self.model_folder)
+                utilities.write_file(i, j, model._lambda, time_e, time_m, theta, sparsity, LD2, top_words, self.top_words_count,
+                                     self.output_folder)
             datafp.close()
         # Write settings
         print'write setting ...'
-        file_name = '%s/setting.txt'%(self.model_folder)
+        file_name = '%s/setting.txt'%(self.output_folder)
         utilities.write_setting(self.settings, file_name)
         # Write final model to file
         print'write final model ...'
-        file_name = '%s/beta_final.dat'%(self.model_folder)
+        file_name = '%s/beta_final.dat'%(self.output_folder)
         utilities.write_topics(model._lambda, file_name)
         # Finish
         print'done!!!'

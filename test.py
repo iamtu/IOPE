@@ -1,15 +1,24 @@
-class Clock:
-    def __init__(self,hours=0):
-        self.hours = hours
+class A:
+    def __init__(self,name=""):
+        self.name = name
     def display(self):
-        print("hours : %d" % (self.hours))
-class SubClock(Clock):
-    def __init__(self, hours = 1, minute = 2):
-        Clock.__init__(self,hours)
-        self.minute = minute
-    def display(self):
-        print("hours: %d, minute: %d" % (self.hours, self.minute))
-x = Clock()
-x.display()
-y = SubClock()
-y.display()
+        print("name : %s" % (self.name))
+    def changeName(self):
+        pass
+class B(A):
+    def __init__(self, name=""):
+        A.__init__(self,name)
+    def changeName(self):
+        self.name += 'B class'
+class C(A):
+    def __init__(self, name=""):
+        A.__init__(self,name)
+    def changeName(self):
+        self.name += 'C class'
+
+b = B()
+b.changeName()
+b.display()
+c = C()
+c.changeName()
+c.display()

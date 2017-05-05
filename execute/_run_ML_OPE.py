@@ -4,12 +4,12 @@ from algorithm.mlope import MLOPE, MLOPE1, MLOPE2, MLOPE3, MLOPE4
 from common import utilities
 
 class runMLOPE:
-    def __init__(self, algo_name, train_file_name, settings, model_folder, test_data, tops):
+    def __init__(self, algo_name, train_file_name, settings, output_folder, test_data, top_words_count):
         self.train_file_name = train_file_name
         self.settings = settings
-        self.model_folder = model_folder
+        self.output_folder = output_folder
         self.test_data = test_data
-        self.tops = tops
+        self.top_words_count = top_words_count
         self.algo_name = algo_name
 
     def run(self):
@@ -76,22 +76,22 @@ class runMLOPE:
                 LD2 = utilities.compute_perplexities_vb(model.beta, self.settings['alpha'], self.settings['eta'],
                                                         self.settings['iter_infer'], self.test_data)
                 # Search top words of each topics
-                list_tops = utilities.list_top(model.beta, self.tops)
+                top_words = utilities.list_top(model.beta, self.top_words_count)
                 # Write files
                 '''
                 i : iter_train mormaly 1
                 j : minibatch number
                 '''
-                utilities.write_file(i, j, model.beta, time_e, time_m, theta, sparsity, LD2, list_tops, self.tops,
-                                     self.model_folder)
+                utilities.write_file(i, j, model.beta, time_e, time_m, theta, sparsity, LD2, top_words, self.top_words_count,
+                                     self.output_folder)
             datafp.close()
         # Write settings
         print'write setting ...'
-        file_name = '%s/setting.txt'%(self.model_folder)
+        file_name = '%s/setting.txt'%(self.output_folder)
         utilities.write_setting(self.settings, file_name)
         # Write final model to file
         print'write final model ...'
-        file_name = '%s/beta_final.dat'%(self.model_folder)
+        file_name = '%s/beta_final.dat'%(self.output_folder)
         utilities.write_topics(model.beta, file_name)
         # Finish
         print'done!!!'
