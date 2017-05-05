@@ -4,8 +4,9 @@ import time
 
 from Base_ML_OPE import BaseMLOPE
 
-class MLOPE3(BaseMLOPE):
+class MLOPE1(BaseMLOPE):
     def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli):
+        print "Initializing ML_OPE1..."
         BaseMLOPE.__init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli)
 
     def infer_doc(self, ids, cts):
@@ -50,7 +51,7 @@ class MLOPE3(BaseMLOPE):
             # Update x_l
             x_l = x_l + alpha * (beta[index,:] - x_l)
 
-            if(self.calculate_MAP_function(theta_u, beta, self.alpha, cts) > self.calculate_MAP_function(theta_l, beta, self.alpha, cts)):
+            if (np.random.randint(2) == 1) :
                 theta = theta_u
             else:
                 theta = theta_l

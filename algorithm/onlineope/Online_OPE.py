@@ -4,13 +4,12 @@ import numpy as np
 
 from Base_Online_OPE import BaseOnlineOPE
 
-class OnlineOPE4(BaseOnlineOPE):
-
+class OnlineOPE(BaseOnlineOPE):
     def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
-                 iter_infer, p_bernoulli, weighted):
+                 iter_infer, p_bernoulli):
+        print "Initializing Online_OPE..."
         BaseOnlineOPE.__init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
-                              iter_infer, p_bernoulli)
-        self.weighted = weighted
+                     iter_infer, p_bernoulli)
 
     def infer_doc(self, ids, cts):
         """
@@ -28,30 +27,23 @@ class OnlineOPE4(BaseOnlineOPE):
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
-
         # x = sum_(k=2)^K theta_k * beta_{kj}
-        x_u = np.dot(theta, beta)
-        x_l = np.dot(theta, beta)
-
+        x = np.dot(theta, beta)
         # Loop
-        U = [1, 0]
-        L = [0, 1]
+        T = [0, 0]
+        T[np.random.randint(2)] += 1
+
         for l in xrange(1,self.INF_MAX_ITER):
-            alpha = 1.0 / (l + 1)
-
-            U[np.random.binomial(1, self.p_bernoulli)] += 1
-            df_u = U[0] * np.dot(beta, cts / x_u) + U[1] * (self.alpha - 1) / theta
-
-            L[np.random.binomial(1, self.p_bernoulli)] += 1
-            df_l = L[0] * np.dot(beta, cts / x_l) + L[1] * (self.alpha - 1) / theta
-
-            df = self.weighted * df_u + (1 - self.weighted) * df_l
+            # Pick fi uniformly
+            T[np.random.binomial(1, self.p_bernoulli)] += 1
+            # Select a vertex with the largest value of
+            # derivative of the function F
+            df = T[0] * np.dot(beta, cts / x) + T[1] * (self.alpha - 1) / theta
             index = np.argmax(df)
+            alpha = 1.0 / (l + 1)
             # Update theta
             theta *= 1 - alpha
             theta[index] += alpha
-            # Update x_l
-            # Update x_u
-            x_u = x_u + alpha * (beta[index,:] - x_u)
-            x_l = x_l + alpha * (beta[index,:] - x_l)
+            # Update x
+            x = x + alpha * (beta[index,:] - x)
         return(theta)

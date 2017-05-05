@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, '../')
-from algorithm.ml-ope import MLOPE, MLOPE1, MLOPE2, MLOPE3, MLOPE4
-import common.utilities
+from algorithm.mlope import MLOPE, MLOPE1, MLOPE2, MLOPE3, MLOPE4
+from common import utilities
 
 class runMLOPE:
     def __init__(self, algo_name, train_file_name, settings, model_folder, test_data, tops):
@@ -19,7 +19,7 @@ class runMLOPE:
                     self.settings['kappa'], self.settings['iter_infer'],
                     self.settings['p_bernoulli'])
         elif self.algo_name == 'ml-ope1':
-            alg = MLOPE1(self.settings['num_terms'], self.settings['num_topics'],
+            model = MLOPE1(self.settings['num_terms'], self.settings['num_topics'],
                         self.settings['alpha'], self.settings['tau0'],
                         self.settings['kappa'], self.settings['iter_infer'],
                         self.settings['p_bernoulli'])

@@ -8,18 +8,10 @@ class OnlineOPE1(BaseOnlineOPE):
 
     def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
                  iter_infer, p_bernoulli):
+        print "Initializing Online_OPE1..."
         BaseOnlineOPE.__init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
                      iter_infer, p_bernoulli)
     def infer_doc(self, ids, cts):
-        """
-        Does inference for a document using Online MAP Estimation algorithm.
-
-        Arguments:
-        ids: an element of wordids, corresponding to a document.
-        cts: an element of wordcts, corresponding to a document.
-
-        Returns inferred theta.
-        """
         # locate cache memory
         beta = self._lambda[:,ids]
         beta /= self.beta_norm[:, np.newaxis]

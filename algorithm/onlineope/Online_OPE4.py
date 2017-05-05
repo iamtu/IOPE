@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
-import numpy as np
 import time
+import numpy as np
 
-from Base_ML_OPE import BaseMLOPE
+from Base_Online_OPE import BaseOnlineOPE
 
-class MLOPE4(BaseMLOPE):
+class OnlineOPE4(BaseOnlineOPE):
 
-    def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli, weighted):
-        BaseMLOPE.__init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli)
+    def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+                 iter_infer, p_bernoulli, weighted):
+        print "Initializing Online_OPE4..."
+        BaseOnlineOPE.__init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+                              iter_infer, p_bernoulli)
         self.weighted = weighted
 
     def infer_doc(self, ids, cts):
         # locate cache memory
-        beta = self.beta[:,ids]
+        beta = self._lambda[:,ids]
+        beta /= self.beta_norm[:, np.newaxis]
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
@@ -42,5 +46,4 @@ class MLOPE4(BaseMLOPE):
             # Update x_u
             x_u = x_u + alpha * (beta[index,:] - x_u)
             x_l = x_l + alpha * (beta[index,:] - x_l)
-
         return(theta)

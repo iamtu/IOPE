@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, '../')
-from algorithm.online-ope import OnlineOPE, OnlineOPE1, OnlineOPE2, OnlineOPE3, OnlineOPE4
-import common.utilities
+from algorithm.onlineope import OnlineOPE, OnlineOPE1, OnlineOPE2, OnlineOPE3, OnlineOPE4
+from common import utilities
 
 class runOnlineOPE:
 
@@ -21,7 +21,7 @@ class runOnlineOPE:
                               self.settings['kappa'], self.settings['iter_infer'],
                               self.settings['p_bernoulli'])
         elif self.algo_name == 'online-ope1':
-            alg = OnlineOPE1(self.settings['num_docs'], self.settings['num_terms'],
+            model = OnlineOPE1(self.settings['num_docs'], self.settings['num_terms'],
                           self.settings['num_topics'], self.settings['alpha'],
                           self.settings['eta'], self.settings['tau0'],
                           self.settings['kappa'], self.settings['iter_infer'],

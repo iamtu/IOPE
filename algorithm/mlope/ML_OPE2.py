@@ -7,18 +7,10 @@ from Base_ML_OPE import BaseMLOPE
 
 class MLOPE2(BaseMLOPE):
     def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli):
+        print "Initializing ML_OPE2..."
         BaseMLOPE.__init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli)
 
     def infer_doc(self, ids, cts):
-        """
-        Does inference for a document using Online MAP Estimation algorithm.
-
-        Arguments:
-        ids: an element of wordids, corresponding to a document.
-        cts: an element of wordcts, corresponding to a document.
-
-        Returns inferred theta.
-        """
         # locate cache memory
         beta = self.beta[:,ids]
         # Initialize theta randomly

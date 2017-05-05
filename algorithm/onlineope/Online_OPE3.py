@@ -1,20 +1,24 @@
 # -*- coding: utf-8 -*-
-import numpy as np
 import time
+import numpy as np
 
-from Base_ML_OPE import BaseMLOPE
+from Base_Online_OPE import BaseOnlineOPE
 
-class MLOPE1(BaseMLOPE):
-    def __init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli):
-        BaseMLOPE.__init__(self, num_terms, num_topics, alpha, tau0, kappa, iter_infer, p_bernoulli)
+class OnlineOPE3(BaseOnlineOPE):
+
+    def __init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+                 iter_infer, p_bernoulli):
+        print "Initializing Online_OPE3..."
+        BaseOnlineOPE.__init__(self, num_docs, num_terms, num_topics, alpha, eta, tau0, kappa,
+            iter_infer, p_bernoulli)
 
     def infer_doc(self, ids, cts):
         # locate cache memory
-        beta = self.beta[:,ids]
+        beta = self._lambda[:,ids]
+        beta /= self.beta_norm[:, np.newaxis]
         # Initialize theta randomly
         theta = np.random.rand(self.num_topics) + 1.
         theta /= sum(theta)
-
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
@@ -22,7 +26,7 @@ class MLOPE1(BaseMLOPE):
         # Loop
         U = [1, 0]
         L = [0, 1]
-        for l in xrange(1,self.INF_MAX_ITER):
+        for l in xrange(1,self.INF_MAX_ITER / 2):
             # Pick fi uniformly
             U[np.random.binomial(1, self.p_bernoulli)] += 1
             # Select a vertex with the largest value of
@@ -50,7 +54,7 @@ class MLOPE1(BaseMLOPE):
             # Update x_l
             x_l = x_l + alpha * (beta[index,:] - x_l)
 
-            if (np.random.randint(2) == 1) :
+            if(self.value_infer_doc(theta_u, beta, self.alpha, cts) > self.value_infer_doc(theta_l, beta, self.alpha, cts)):
                 theta = theta_u
             else:
                 theta = theta_l
