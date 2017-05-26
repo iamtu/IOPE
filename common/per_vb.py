@@ -27,7 +27,7 @@ class VB:
         self._alpha = alpha
         self._eta = eta
         self._max_iter = max_iter
-        
+
         # normalize lambda
         _lambda_norm = self._lambda.sum(axis = 1)
         self._lambda /= _lambda_norm[:, np.newaxis]
@@ -69,7 +69,7 @@ class VB:
             gammad /= sum(gammad)
             gamma[d, :] = gammad
         return(gamma)
-        
+
     def compute_lkh_d2(self, gammad, wordids_2d, wordcts_2d):
         """
         Compute log predictive probability for each document in 'w_ho' part.
@@ -85,11 +85,10 @@ class VB:
         else:
             result = ld2
         return(result)
-                
+
     def compute_perplexity(self, data_test):
         """
         Compute log predictive probability for all documents in 'w_ho' part.
-        
         """
         batch_size = len(data_test[0])
         # E step
@@ -98,8 +97,8 @@ class VB:
         LD2 = 0.
         for d in range(batch_size):
             LD2 += self.compute_lkh_d2(gamma[d], data_test[2][d], data_test[3][d])
-        return(LD2 / batch_size)    
-        
+        return(LD2 / batch_size)
+
         '''
         LD2 = float = means of sum (log predictive probability for each document)
         '''

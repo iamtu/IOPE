@@ -260,8 +260,11 @@ def write_setting(ddict, file_name):
     f.close()
 
 def write_file(i, j, beta, time_e, time_m, theta, sparsity, LD2, list_tops, top_words_count, output_folder):
+    """
     beta_file_name = '%s/beta_%d_%d.dat'%(output_folder, i, j)
     theta_file_name = '%s/theta_%d.dat'%(output_folder, i)
+    """
+
     per_file_name = '%s/perplexities_%d.csv'%(output_folder, i)
     top_file_name = '%s/top%d_%d_%d.dat'%(output_folder, top_words_count, i, j)
     spar_file_name = '%s/sparsity_%d.csv'%(output_folder, i)

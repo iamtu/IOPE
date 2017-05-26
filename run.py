@@ -2,7 +2,7 @@
 
 import sys, os, shutil
 sys.path.insert(0, './')
-from execute import runOPE
+from execute import runOPE, runOnlineVB
 from common import utilities, NPMI_LCP_calculator
 
 def main():
@@ -32,7 +32,8 @@ def main():
 
     # Check method and run algorithm
     methods = ['ml-ope', 'ml-ope1','ml-ope2','ml-ope3','ml-ope4',
-    		'online-ope','online-ope1','online-ope2','online-ope3','online-ope4']
+    		'online-ope','online-ope1','online-ope2','online-ope3','online-ope4',
+            'online-vb']
     method_name = method_name.lower()
 
     if method_name not in methods:
@@ -41,10 +42,13 @@ def main():
         for method in methods:
             print '\t\t%s'%(method)
         exit()
-    else :
+    elif method_name == 'online-vb' :
+        runonlinevb = runOnlineVB(train_file_name, settings, output_folder, test_data, tops)
+        runonlinevb.run()
+    else:
         runOPEx = runOPE(method_name, train_file_name, settings, output_folder, test_data, tops)
         runOPEx.run()
-        NPMI_LCP_calculator(train_file_name, output_folder, settings, tops)
+    NPMI_LCP_calculator(train_file_name, output_folder, settings, tops)
 
 if __name__ == '__main__':
     main()
