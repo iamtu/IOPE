@@ -150,6 +150,7 @@ def read_setting(file_name):
     ddict['kappa_theta'] = float(ddict['kappa_theta'])
     ddict['s_theta'] = float(ddict['s_theta'])
     ddict['burn_in'] = int(ddict['burn_in'])
+    ddict['num_samples'] = int(ddict['num_samples'])
 
     return(ddict)
 

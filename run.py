@@ -2,7 +2,7 @@
 
 import sys, os, shutil
 sys.path.insert(0, './')
-from execute import runOPE, runOnlineVB, runOnlineCVB0
+from execute import runOPE, runOnlineVB, runOnlineCVB0, runOnlineCGS
 from common import utilities, NPMI_LCP_calculator
 
 def main():
@@ -33,7 +33,7 @@ def main():
     # Check method and run algorithm
     methods = ['ml-ope', 'ml-ope1','ml-ope2','ml-ope3','ml-ope4',
     		'online-ope','online-ope1','online-ope2','online-ope3','online-ope4',
-            'online-vb','online-cvb0']
+            'online-vb','online-cvb0','online-cgs']
     method_name = method_name.lower()
 
     if method_name not in methods:
@@ -42,6 +42,10 @@ def main():
         for method in methods:
             print '\t\t%s'%(method)
         exit()
+    elif method_name == 'online-cgs' :
+        runonlinecgs = runOnlineCGS(train_file_name, settings, output_folder, test_data, tops)
+        runonlinecgs.run()
+
     elif method_name == 'online-cvb0' :
         runonlinecvb0 = runOnlineCVB0(train_file_name, settings, output_folder, test_data, tops)
         runonlinecvb0.run()
