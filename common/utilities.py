@@ -135,11 +135,22 @@ def read_setting(file_name):
     ddict = dict(zip(sets, vals))
     ddict['num_terms'] = int(ddict['num_terms'])
     ddict['num_topics'] = int(ddict['num_topics'])
+    ddict['alpha'] = float(ddict['alpha'])
+    ddict['eta'] = float(ddict['eta'])
     ddict['iter_train'] = int(ddict['iter_train'])
     ddict['iter_infer'] = int(ddict['iter_infer'])
     ddict['batch_size'] = int(ddict['batch_size'])
     ddict['no_sequence'] = int(ddict['no_sequence'])
     ddict['p_bernoulli'] = float(ddict['p_bernoulli'])
+    ddict['num_tokens'] = int(ddict['num_tokens'])
+    ddict['tau_phi'] = float(ddict['tau_phi'])
+    ddict['kappa_phi'] = float(ddict['kappa_phi'])
+    ddict['s_phi'] = float(ddict['s_phi'])
+    ddict['tau_theta'] = float(ddict['tau_theta'])
+    ddict['kappa_theta'] = float(ddict['kappa_theta'])
+    ddict['s_theta'] = float(ddict['s_theta'])
+    ddict['burn_in'] = int(ddict['burn_in'])
+
     return(ddict)
 
 """

@@ -14,3 +14,10 @@ burn_in: 15
 no_sequence: 3
 weighted_new4: 0.3
 p_bernoulli: 0.45
+num_tokens: 95510272
+tau_phi: 1.0
+kappa_phi: 0.9
+s_phi: 1.0
+tau_theta: 10.0
+kappa_theta: 0.9
+s_theta: 1.0
