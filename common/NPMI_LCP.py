@@ -147,16 +147,20 @@ def NPMI_LCP_calculator(train_file_name, output_folder, settings, tops):
                 for t in range(T):
                     index.append(filtered_tops.index(list_top[k][t]))
                 # compute
-                total_LCP = 0.; total_NPMI = 0.
+                total_LCP = 0.
+                total_NPMI = 0.
                 for ii in range(1,T):
                     for jj in range(0, ii):
                         if(df[index[jj]] > 0):
                             total_LCP += np.log(float(duv[index[ii]][index[jj]]) / df[index[jj]])
                         if(duv[index[ii]][index[jj]]) != 0:
                             total_NPMI += -1. + (np.log(df[index[ii]] * df[index[jj]]) - 2*logN) / (np.log(duv[index[ii]][index[jj]]) - logN)
-                ch_LCP.append(total_LCP); ch_NPMI.append(total_NPMI)
+                ch_LCP.append(total_LCP)
+                ch_NPMI.append(total_NPMI)
             print 'LCP %f' % np.mean(ch_LCP)
             print 'NPMI %f' % np.mean(ch_NPMI)
+            filename_NPMI_minibatch = '%s/minibatch-%d-NPMI-top10.csv' % (output_folder, j+1)
+            np.savetxt(filename_NPMI_minibatch, delimiter=',')
             fmean_LCP.writelines('%f,' % np.mean(ch_LCP))
             fmean_NPMI.writelines('%f,' % np.mean(ch_NPMI))
             fmedian_LCP.writelines('%f,' % np.median(ch_LCP))

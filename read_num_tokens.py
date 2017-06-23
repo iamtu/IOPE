@@ -9,11 +9,9 @@ def count_token(filename):
                 token_count_pair = map(int, token_count_pair)
                 count += token_count_pair[1]
     f.close()
+    print 'Tokens count : %d' % count
     return (count)
 
 
 if __name__ == '__main__':
-    print "Counting number of tokens in datasets"
-    print "ap: %d"%(count_token('../data/ap/ap_train.txt'))
-    print "nyt: %d"%(count_token('../data/nyt/nyt_train.txt'))
-    print "pubmed: %d"%(count_token('../data/pubmed/pubmed_train.txt'))
+    count_token(sys.argv[1]);
