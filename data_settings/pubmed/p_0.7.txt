@@ -9,7 +9,7 @@ kappa: 0.9
 conv_infer: 1e-5
 iter_infer: 50
 iter_train: 1
-num_samples: 15
+num_samples: 50
 burn_in: 15
 no_sequence: 3
 weighted_new4: 0.1

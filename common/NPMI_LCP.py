@@ -160,7 +160,7 @@ def NPMI_LCP_calculator(train_file_name, output_folder, settings, tops):
             print 'LCP %f' % np.mean(ch_LCP)
             print 'NPMI %f' % np.mean(ch_NPMI)
             filename_NPMI_minibatch = '%s/minibatch-%d-NPMI-top10.csv' % (output_folder, j+1)
-            np.savetxt(filename_NPMI_minibatch, delimiter=',')
+            np.savetxt(filename_NPMI_minibatch, ch_NPMI, delimiter=',')
             fmean_LCP.writelines('%f,' % np.mean(ch_LCP))
             fmean_NPMI.writelines('%f,' % np.mean(ch_NPMI))
             fmedian_LCP.writelines('%f,' % np.median(ch_LCP))
