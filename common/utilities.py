@@ -46,6 +46,23 @@ def read_data_for_perpl(test_data_folder):
     return(data_test)
 
 """
+    Read data for computing MAP value.
+    FIXME - stupid
+"""
+def read_data_for_MAP(test_data_folder):
+    filename_part1 = '%s/data_test_part_1.txt'%(test_data_folder)
+    filename_part2 = '%s/data_test_part_2.txt'%(test_data_folder)
+    (wordids_1, wordcts_1) = read_data(filename_part1)
+    (wordids_2, wordcts_2) = read_data(filename_part2)
+    
+    for d in len(wordids_1):
+        wordids_1[d].append(wordids_2[d]);
+        wordcts_1[d].append(wordcts_2[d]);
+    
+    return(wordids_1, wordids_2);
+
+
+"""
     Read mini-batch and stores terms and counts in lists.
 """
 def read_minibatch_list_frequencies(fp, batch_size):
