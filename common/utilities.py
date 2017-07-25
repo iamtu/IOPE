@@ -50,16 +50,17 @@ def read_data_for_perpl(test_data_folder):
     FIXME - stupid
 """
 def read_data_for_MAP(test_data_folder):
+    print 'reading data for map'
     filename_part1 = '%s/data_test_part_1.txt'%(test_data_folder)
     filename_part2 = '%s/data_test_part_2.txt'%(test_data_folder)
     (wordids_1, wordcts_1) = read_data(filename_part1)
     (wordids_2, wordcts_2) = read_data(filename_part2)
     
-    for d in len(wordids_1):
-        wordids_1[d].append(wordids_2[d]);
-        wordcts_1[d].append(wordcts_2[d]);
-    
-    return(wordids_1, wordids_2);
+    for d in xrange(len(wordids_1)):
+        wordids_1[d] = np.append(wordids_1[d], wordids_2[d]);
+        wordcts_1[d] = np.append(wordcts_1[d], wordcts_2[d]);
+#     
+    return(wordids_1, wordcts_1);
 
 
 """

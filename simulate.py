@@ -41,7 +41,7 @@ def main():
         infer_generate_compare(lda_model, x, theta_true, word_ids, count_ids, output_folder);
         
 #     read test documents and infer
-    words_ids, counts_ids = utilities.read_data_for_MAP(test_data_folder);
+    (words_ids, counts_ids) = utilities.read_data_for_MAP(test_data_folder);
     doc_count = 10;
     for x in xrange(0, doc_count):
         infer_test_doc_compare(lda_model, x, words_ids[x], counts_ids[x], output_folder);
