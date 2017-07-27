@@ -9,8 +9,8 @@ from simulation.lda import LDA
 from scipy import spatial
 def main():
     print 'enter main'
-    if len(sys.argv) != 4:
-        print"usage: python simulate.py [setting file]  [beta file] [test data folder]"
+    if len(sys.argv) > 5:
+        print"usage: python simulate.py [setting file]  [beta file] [test data folder] [generate_doc]"
         exit()
     
     setting_file = sys.argv[1]
@@ -22,6 +22,9 @@ def main():
     test_data_folder = sys.argv[3]
     output_folder = os.path.dirname(beta_file_name) +'/images';
     print 'output folder', output_folder
+    
+    is_generate_doc = sys.argv[4] is not None
+    
     # Create model folder if it doesn't exist
     if os.path.exists(output_folder):
         shutil.rmtree(output_folder)
@@ -35,11 +38,12 @@ def main():
     lda_model = LDA(zeta, settings['alpha'], beta_file_name)
      
 #     simulating generating a document and do approximating a document
-    doc_count = 10;
-    print 'Generate %d docs to compare.'%doc_count
-    for x in xrange(0, doc_count):
-        (theta_true, word_ids, count_ids) = lda_model.generate_document()
-        infer_generate_compare(lda_model, x, theta_true, word_ids, count_ids, output_folder);
+    if is_generate_doc :
+        doc_count = 10;
+        print 'Generate %d docs to compare.'%doc_count
+        for x in xrange(0, doc_count):
+            (theta_true, word_ids, count_ids) = lda_model.generate_document()
+            infer_generate_compare(lda_model, x, theta_true, word_ids, count_ids, output_folder);
          
 #     read test documents and infer
     (words_ids, counts_ids) = utilities.read_data_for_MAP(test_data_folder);
@@ -54,20 +58,33 @@ def main():
 def infer_test_doc_compare(lda_model, doc_id, word_ids, count_ids, output_folder):
     
     infer_iter_OPE = 50;
+    infer_iter_OPE1 = 50;
+    infer_iter_OPE2 = 50;
     infer_iter_OPE3 = 50;
+    infer_iter_OPE4 = 50;    
     
     init_theta = np.random.rand(lda_model._K) + 1.
     init_theta /= sum(init_theta)
     
     thetas_OPE = lda_model.OPE(word_ids, count_ids, init_theta, infer_iter_OPE);
-    map_values_OPE = lda_model.compute_MAPs(thetas_OPE, lda_model._beta[:,word_ids], lda_model._alpha[0], count_ids);
-
+    thetas_OPE1 = lda_model.OPE1(word_ids, count_ids, init_theta, infer_iter_OPE1);
+    thetas_OPE2 = lda_model.OPE2(word_ids, count_ids, init_theta, infer_iter_OPE2);
     thetas_OPE3 = lda_model.OPE3(word_ids, count_ids, init_theta, infer_iter_OPE3);    
+    thetas_OPE4 = lda_model.OPE4(word_ids, count_ids, init_theta, infer_iter_OPE4, 0.01);
+    
+    map_values_OPE = lda_model.compute_MAPs(thetas_OPE, lda_model._beta[:,word_ids], lda_model._alpha[0], count_ids);
+    map_values_OPE1 = lda_model.compute_MAPs(thetas_OPE1, lda_model._beta[:,word_ids], lda_model._alpha[0], count_ids);
+    map_values_OPE2 = lda_model.compute_MAPs(thetas_OPE2, lda_model._beta[:,word_ids], lda_model._alpha[0], count_ids);
     map_values_OPE3 = lda_model.compute_MAPs(thetas_OPE3, lda_model._beta[:,word_ids], lda_model._alpha[0], count_ids);
-
+    map_values_OPE4 = lda_model.compute_MAPs(thetas_OPE4, lda_model._beta[:,word_ids], lda_model._alpha[0], count_ids);
+    
+    
     plt.figure();
     plt.plot(xrange(infer_iter_OPE), map_values_OPE, label='OPE');
+    plt.plot(xrange(infer_iter_OPE1), map_values_OPE1, label='OPE1');
+    plt.plot(xrange(infer_iter_OPE2), map_values_OPE2, label='OPE2');
     plt.plot(xrange(infer_iter_OPE3), map_values_OPE3, label='OPE3');
+    plt.plot(xrange(infer_iter_OPE4), map_values_OPE4, label='OPE4');
     plt.ylabel('MAP value');
     plt.legend();
     dis_file_name = output_folder +'/' + 'test_doc_%d_dis.eps'%doc_id;

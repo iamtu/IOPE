@@ -32,6 +32,11 @@ class LDA:
             counts.append(id_count_pairs[_id])
         return (theta, ids, counts)
   
+    def initRandomTheta(self):
+        theta = np.random.rand(self._K) + 1.
+        theta /= sum(theta)
+        return theta
+
     def compute_MAPs(self, thetas, beta, alpha, cts):
         iter_count = thetas.shape[0];
         values = np.zeros(iter_count);
@@ -56,8 +61,11 @@ class LDA:
         beta = self._beta[:,ids]
         
         thetas = np.zeros((infer_max_iter, self._K));
+        if init_theta is not None:
+            theta = np.copy(init_theta)
+        else :
+            theta = self.initRandomTheta();
         
-        theta = np.copy(init_theta)
         thetas[0] = theta
         
         # x = sum_(k=2)^K theta_k * beta_{kj}
@@ -89,9 +97,10 @@ class LDA:
         beta = self._beta[:,ids]
         thetas = np.zeros((infer_max_iter, self._K))
         
-        # Initialize theta randomly
-        theta = np.copy(init_theta)
-        thetas[0] = theta
+        if init_theta is not None:
+            theta = np.copy(init_theta)
+        else :
+            theta = self.initRandomTheta();
         
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
@@ -142,9 +151,10 @@ class LDA:
         beta = self._beta[:,ids]
         thetas = np.zeros((infer_max_iter, self._K))
         
-        # Initialize theta randomly
-        theta = np.copy(init_theta)
-        thetas[0] = theta
+        if init_theta is not None:
+            theta = np.copy(init_theta)
+        else :
+            theta = self.initRandomTheta();
         
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
@@ -205,9 +215,10 @@ class LDA:
 
         thetas = np.zeros((infer_max_iter, self._K))
         
-        # Initialize theta randomly
-        theta = np.copy(init_theta)
-        thetas[0] = theta
+        if init_theta is not None:
+            theta = np.copy(init_theta)
+        else :
+            theta = self.initRandomTheta();
         
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
@@ -258,9 +269,10 @@ class LDA:
 
         thetas = np.zeros((infer_max_iter, self._K))
         
-        # Initialize theta randomly
-        theta = np.copy(init_theta)
-        thetas[0] = theta
+        if init_theta is not None:
+            theta = np.copy(init_theta)
+        else :
+            theta = self.initRandomTheta();
         
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
