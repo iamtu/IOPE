@@ -5,3 +5,6 @@
 
 2. To compare inferences methods run :
 	python simulate.py ./data_settings/nyt/p_0.5.txt ../models/ml-ope/nyt/beta_final.dat ../data/nyt
+
+PUBMED doc_length_averaage 65.145473
+NYT doc_length_averaage 329.345766

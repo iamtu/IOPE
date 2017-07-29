@@ -102,6 +102,8 @@ class LDA:
         else :
             theta = self.initRandomTheta();
         
+        thetas[0] = theta
+        
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
@@ -155,6 +157,7 @@ class LDA:
             theta = np.copy(init_theta)
         else :
             theta = self.initRandomTheta();
+        thetas[0] = theta
         
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
@@ -194,7 +197,7 @@ class LDA:
             fu = self.compute_MAP(theta_u, beta, self._alpha[0], cts)
             fl = self.compute_MAP(theta_l, beta, self._alpha[0], cts)
             try:
-                pivot = np.exp(fu) / (np.exp(fu) + np.exp(fl))
+                pivot = 1 / 1 + np.exp(fl - fu)
             except ZeroDivisionError:
                 pivot = 0.5
             except OverflowError:
@@ -220,6 +223,7 @@ class LDA:
         else :
             theta = self.initRandomTheta();
         
+        thetas[0] = theta;
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
@@ -274,6 +278,7 @@ class LDA:
         else :
             theta = self.initRandomTheta();
         
+        thetas[0] = theta
         # x_u = sum_(k=2)^K theta_k * beta_{kj}
         x_u = np.dot(theta, beta)
         x_l = np.dot(theta, beta)
