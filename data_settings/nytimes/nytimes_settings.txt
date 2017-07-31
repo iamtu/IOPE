@@ -21,3 +21,4 @@ s_phi: 1.0
 tau_theta: 10.0
 kappa_theta: 0.9
 s_theta: 1.0
+# NOTE - num_terms = num_term in dataset + 1
