@@ -33,45 +33,52 @@ def main():
     print 'reading setting ...'
     settings = utilities.read_setting(setting_file)
 
-    doc_count = 100; # number of documents in comparison
+    doc_count = 1000; # number of documents in comparison
 
     (test_words_ids, test_counts_ids) = utilities.read_data_for_MAP(test_data_folder);
     test_doc_ids = random.sample(range(0, len(test_words_ids)), doc_count);
  
 #     init LDA model with beta file name
     # FIXME -     zeta = calculate_average_doc_length(beta_file_name);
-    zeta = 65
+    if 'nytimes' in beta_file_name:
+        zeta = 330
+    elif 'pubmed' in beta_file_name:
+        zeta = 65
+    else:
+        print "not support this dataset"
+        exit(1)
+    
     lda_model = LDA(zeta, settings['alpha'], beta_file_name);
      
      
 #    1. comparison of OPE vs OPE1234
 #     simulating generating a document and do approximating a document
-#     print 'Simulation ...'
-#     print 'Generate %d docs to compare.'%doc_count
-#     for x in xrange(0, doc_count):
-#         (theta_true, word_ids, count_ids) = lda_model.generate_document()
-#         infer_generate_compare(lda_model, x, theta_true, True, word_ids, count_ids, output_folder);
-#         infer_generate_compare(lda_model, x, theta_true, False , word_ids, count_ids, output_folder);
-#         
-# #    infer test documents
-#     print 'Compare random %d docs in test data'%(len(test_doc_ids))
-#     for x in xrange(0, len(test_doc_ids)):
-#         infer_test_doc_compare(lda_model, test_doc_ids[x], True, test_words_ids[test_doc_ids[x]], test_counts_ids[test_doc_ids[x]], output_folder);
-#         infer_test_doc_compare(lda_model, test_doc_ids[x], False, test_words_ids[test_doc_ids[x]], test_counts_ids[test_doc_ids[x]], output_folder);
+    print 'Simulation ...'
+    print 'Generate %d docs to compare.'%doc_count
+    for x in xrange(0, doc_count):
+        (theta_true, word_ids, count_ids) = lda_model.generate_document()
+        infer_generate_compare(lda_model, x, theta_true, True, word_ids, count_ids, output_folder);
+        infer_generate_compare(lda_model, x, theta_true, False , word_ids, count_ids, output_folder);
+         
+#    infer test documents
+    print 'Compare random %d docs in test data'%(len(test_doc_ids))
+    for x in xrange(0, len(test_doc_ids)):
+        infer_test_doc_compare(lda_model, test_doc_ids[x], True, test_words_ids[test_doc_ids[x]], test_counts_ids[test_doc_ids[x]], output_folder);
+        infer_test_doc_compare(lda_model, test_doc_ids[x], False, test_words_ids[test_doc_ids[x]], test_counts_ids[test_doc_ids[x]], output_folder);
     
 
 #    2. compare OPE vs OPE3 in terms of number of iterations
 
-    print 'Compare OPE vs OPE3 in terms of number of iterations'
-    print 'Generate %d docs to compare.'%doc_count
-    for x in xrange(0, doc_count):
-        (theta_true, word_ids, count_ids) = lda_model.generate_document()
-        infer_OPE_OPE3_number_interation_compare_generate(lda_model, x, theta_true, False , \
-                                                          word_ids, count_ids, output_folder);
-
-    for x in xrange(0, len(test_doc_ids)):
-        infer_OPE_OPE3_number_interation_compare_test_doc(lda_model, test_doc_ids[x], False, \
-                                                          test_words_ids[test_doc_ids[x]], test_counts_ids[test_doc_ids[x]], output_folder);
+#     print 'Compare OPE vs OPE3 in terms of number of iterations'
+#     print 'Generate %d docs to compare.'%doc_count
+#     for x in xrange(0, doc_count):
+#         (theta_true, word_ids, count_ids) = lda_model.generate_document()
+#         infer_OPE_OPE3_number_interation_compare_generate(lda_model, x, theta_true, False , \
+#                                                           word_ids, count_ids, output_folder);
+# 
+#     for x in xrange(0, len(test_doc_ids)):
+#         infer_OPE_OPE3_number_interation_compare_test_doc(lda_model, test_doc_ids[x], False, \
+#                                                           test_words_ids[test_doc_ids[x]], test_counts_ids[test_doc_ids[x]], output_folder);
 
     print 'Output result in folder %s' % output_folder
 
@@ -254,6 +261,16 @@ def infer_test_doc_compare(lda_model, doc_id, is_init_theta, word_ids, count_ids
     plt.savefig(dis_file_name);
     plt.close();
 
+    txt_file_name = output_folder +'/' + sub_folder +  '/test_doc_%d_dis.txt'%doc_id;
+    fpt = open(txt_file_name, 'w');
+    fpt.write('map values\n');
+    fpt.write(utilities.np_array_to_string(map_values_OPE));
+    fpt.write(utilities.np_array_to_string(map_values_OPE1));
+    fpt.write(utilities.np_array_to_string(map_values_OPE2));
+    fpt.write(utilities.np_array_to_string(map_values_OPE3));
+    fpt.write(utilities.np_array_to_string(map_values_OPE4));
+    fpt.close();
+
 
 def infer_generate_compare(lda_model, doc_id, theta_true, is_init_theta, word_ids, count_ids, output_folder):
 
@@ -403,6 +420,39 @@ def infer_generate_compare(lda_model, doc_id, theta_true, is_init_theta, word_id
     dis_file_name = output_folder +'/' + sub_folder + '/generated_doc_%d_dis.eps'%doc_id;
     plt.savefig(dis_file_name);
     plt.close();
+    
+    #save image as txt
+    txt_file_name = output_folder +'/' + sub_folder + '/generated_doc_%d_dis.txt'%doc_id
+    fpt = open(txt_file_name, 'w');
+    fpt.write('map value \n');
+    fpt.write(utilities.np_array_to_string(map_values_OPE));
+    fpt.write(utilities.np_array_to_string(map_values_OPE1));
+    fpt.write(utilities.np_array_to_string(map_values_OPE2));
+    fpt.write(utilities.np_array_to_string(map_values_OPE3));
+    fpt.write(utilities.np_array_to_string(map_values_OPE4));
+    
+    fpt.write('cosin distance\n');
+    fpt.write(utilities.np_array_to_string(cosine_dis_OPE));
+    fpt.write(utilities.np_array_to_string(cosine_dis_OPE1));
+    fpt.write(utilities.np_array_to_string(cosine_dis_OPE2));
+    fpt.write(utilities.np_array_to_string(cosine_dis_OPE3));
+    fpt.write(utilities.np_array_to_string(cosine_dis_OPE4));
+    
+    fpt.write('euclid distance\n');
+    fpt.write(utilities.np_array_to_string(euclid_dis_OPE));
+    fpt.write(utilities.np_array_to_string(euclid_dis_OPE1));
+    fpt.write(utilities.np_array_to_string(euclid_dis_OPE2));
+    fpt.write(utilities.np_array_to_string(euclid_dis_OPE3));
+    fpt.write(utilities.np_array_to_string(euclid_dis_OPE4));
+    
+    fpt.write('kl-divergence\n');
+    fpt.write(utilities.np_array_to_string(kl_divergence_OPE));
+    fpt.write(utilities.np_array_to_string(kl_divergence_OPE1));
+    fpt.write(utilities.np_array_to_string(kl_divergence_OPE2));
+    fpt.write(utilities.np_array_to_string(kl_divergence_OPE3));
+    fpt.write(utilities.np_array_to_string(kl_divergence_OPE4));
+    
+    fpt.close();
     
     return ;
 

@@ -317,3 +317,11 @@ def write_file(i, j, beta, time_e, time_m, theta, sparsity, LD2, list_tops, top_
     write_time(i, j, time_e, time_m, time_file_name)
     # write loop
     write_loop(i, j, loop_file_name)
+    
+def np_array_to_string(a):
+    _str = ''
+    for i in xrange(len(a)-1):
+        _str += str(a[i]) + ',';
+    _str += str(a[-1]) + '\n'
+    return _str;
+
