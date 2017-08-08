@@ -1,4 +1,4 @@
-num_docs: 300000
+num_docs: 8190000
 num_terms: 141044
 num_topics: 100
 batch_size: 5000

@@ -309,4 +309,45 @@ class LDA:
             thetas[l] = theta
             
         return (thetas)
+    
+    
+    def count_OPE_iterations(self, ids, cts, THRESHOLD):
+        # locate cache memory
+        beta = self._beta[:,ids]
+        theta = self.initRandomTheta();
+                
+        # x = sum_(k=2)^K theta_k * beta_{kj}
+        x = np.dot(theta, beta)
+        # Loop
+        T = [0, 0]
+        T[np.random.randint(2)] += 1
+        
+        l = 1;
+        map_value = self.compute_MAP(theta, beta, self._alpha[0], cts)
+        while True :
+            #print 'iteration ', l
+            old_map_value = map_value;
+            
+            # Pick fi bernoulli with p
+            T[np.random.randint(2)] += 1
+            df = T[0]*np.dot(beta, cts/x) + T[1]*(self._alpha[0] - 1)/theta
+            # Select a vertex with the largest value of
+            # derivative of the function F
+            index = np.argmax(df)
+            alpha = 1.0 / (l + 1)
+            # Update theta
+            theta *= 1 - alpha
+            theta[index] += alpha
+            # Update x
+            x = x + alpha * (beta[index,:] - x)
+            l += 1
+            map_value = self.compute_MAP(theta, beta, self._alpha[0], cts)
+            change = np.abs( (map_value - old_map_value) / map_value)
+            #print 'change ', change
+            if change < THRESHOLD:
+                break;
+        
+        return (l-1)
+
+
         

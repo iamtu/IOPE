@@ -59,6 +59,7 @@ class VB:
             expElogthetad = expElogtheta[d, :]
             expElogbetad = self._lambda[:, ids]
             phinorm = np.dot(expElogthetad, expElogbetad) + 1e-100
+            
             # Iterate between gamma and phi until convergence
             for it in range(0, self._max_iter):
                 gammad = self._alpha + expElogthetad * \
@@ -66,6 +67,7 @@ class VB:
                 Elogthetad = dirichlet_expectation(gammad)
                 expElogthetad = np.exp(Elogthetad)
                 phinorm = np.dot(expElogthetad, expElogbetad) + 1e-100
+            
             gammad /= sum(gammad)
             gamma[d, :] = gammad
         return(gamma)
